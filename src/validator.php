@@ -122,6 +122,8 @@ class Validator
 	 */
 	public $validation_data	= array();
 
+	protected $debug = 0;
+
 	/**
 	 * Initialize Form_Validation class
 	 *
@@ -132,6 +134,7 @@ class Validator
 	{
 		$this->f3  = \Base::instance();
 		$this->log = new \Log(\Web::instance()->slug(__CLASS__.'-'.date('Y-m-d')).'.log');
+		$this->debug = $this->f3->get('DEBUG');
 
 		// configure the validator languages
 		$this->f3->set('LOCALES', __DIR__.'/../languages/');
@@ -151,7 +154,9 @@ class Validator
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
 
-		$this->log->write(__LINE__. ': INFO: Form Validation Class Initialized');
+		if ($this->debug) {
+			$this->log->write(__LINE__. ': INFO: Form Validation Class Initialized');
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -188,7 +193,9 @@ class Validator
 		// or a validation array has not been specified
 		if ($this->f3['VERB'] !== 'POST' && empty($this->validation_data))
 		{
-			$this->log->write(__LINE__. ': DEBUG: No reason to set rules if we have no POST data or a validation array has not been specified');
+			if ($this->debug) {
+				$this->log->write(__LINE__. ': DEBUG: No reason to set rules if we have no POST data or a validation array has not been specified');
+			}
 			return $this;
 		}
 
@@ -438,7 +445,9 @@ class Validator
 			// No validation rules?  We're done...
 			if (count($this->_config_rules) === 0)
 			{
-				$this->log->write(__LINE__. ': DEBUG: There is no validation rules.');
+				if ($this->debug) {
+					$this->log->write(__LINE__. ': DEBUG: There is no validation rules.');
+				}
 				return FALSE;
 			}
 
@@ -447,7 +456,9 @@ class Validator
 			// Were we able to set the rules correctly?
 			if (count($this->_field_data) === 0)
 			{
-				$this->log->write(__LINE__. ': DEBUG: Unable to find validation rules');
+				if ($this->debug) {
+					$this->log->write(__LINE__. ': DEBUG: Unable to find validation rules');
+				}
 				return FALSE;
 			}
 		}
@@ -718,7 +729,9 @@ class Validator
 				{
 					if ( ! method_exists($this->f3, $rule))
 					{
-						$this->log->write(__LINE__. ': DEBUG: Unable to find callback validation rule: '.$rule);
+						if ($this->debug) {
+							$this->log->write(__LINE__. ': DEBUG: Unable to find callback validation rule: '.$rule);
+						}
 						$result = FALSE;
 					}
 					else
@@ -776,7 +789,9 @@ class Validator
 				}
 				else
 				{
-					$this->log->write(__LINE__. ': DEBUG: Unable to find validation rule: '.$rule);
+					if ($this->debug) {
+						$this->log->write(__LINE__. ': DEBUG: Unable to find validation rule: '.$rule);
+					}
 					$result = FALSE;
 				}
 			}
